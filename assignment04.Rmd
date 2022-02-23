@@ -1,0 +1,34 @@
+---
+title: "real04"
+author: "Hannah Hill & Imani Sherill"
+date: "2/23/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+library(srvyr)
+library(janitor)
+library(dplyr)
+census <- read_csv("poverty1.csv")
+census <- census [9:63 , 1:5] %>%
+  na.omit() %>%
+  rename(total_pop = 2) %>%
+  rename(in_poverty = 3) %>%
+  rename(moe = 4) %>%
+  rename(percent_poverty = 5)
+view(census)
+```
+
+```{r, cleaning and renaming}
+
+```
