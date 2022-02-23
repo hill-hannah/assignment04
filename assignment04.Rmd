@@ -22,6 +22,7 @@ library(dplyr)
 census <- read_csv("poverty1.csv")
 census <- census [9:63 , 1:5] %>%
   na.omit() %>%
+  rename(category = 1) %>%
   rename(total_pop = 2) %>%
   rename(in_poverty = 3) %>%
   rename(moe = 4) %>%
@@ -29,6 +30,32 @@ census <- census [9:63 , 1:5] %>%
 view(census)
 ```
 
-```{r, cleaning and renaming}
+```{r, cleaning data}
+race <- census [2:6, 1:5] %>%
+  rename(race = category)
+view(race)
+age <- census [9:11, 1:5] %>%
+  rename(age = category)
+sex <- census [7:8, 1:5] %>%
+  rename(sex = category)
+
 
 ```
+
+
+## Data Visualization 1
+# Race
+```{r, visualization 1}
+race %>%
+  select(race, total_pop, in_poverty, percent_poverty) %>%
+  ggplot() +
+  geom_col(mapping = aes(x = race, y = percent_poverty)) +
+  labs(
+    title = "Americans in Poverty in 2019 by Race",
+    subtitle = "Data Visualization 01",
+    caption = "Source: U.S. Census Bureau",
+    x = "Race",
+    y = "Percentage in Poverty"
+  )
+```
+
