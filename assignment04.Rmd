@@ -104,6 +104,7 @@ g + geom_bar()
 
 ## Data Visualization 3 - New dataset
 # gini coefficient since 1967
+
 ``` {r}
 gini %>%
   ggplot(mapping = aes(x = year, y = gini_coefficient)) +
@@ -117,3 +118,102 @@ gini %>%
 #### currently ugly, but passable. need to fix the y axis to be more spread out and not do every single .001 value.
 #### compare to other graph that highlights boomer generation lack of poverty
 ```
+
+### Imani's edits 
+### data editing and cleaning 
+
+```{r}
+library(tidyverse)
+library (haven)
+library(janitor)
+library(srvyr)
+library (dplyr)
+```
+
+```{r}
+##census <- read_excel(path = "relative/file/path/to/data")
+
+census_poverty <- read_excel("poverty.xlsx") %>%
+janitor::clean_names()
+glimpse (census_poverty) 
+```
+
+
+```{r}
+census_poverty <-  census_poverty [ 9 : 63, 1 : 5] %>% 
+  na.omit() %>% 
+  rename (category = 1 ) %>%
+  rename( total_pop = 2) %>%
+  rename (in_poverty = 3 ) %>% 
+  rename (moe = 4 ) %>% 
+  rename (percent_poverty = 5)
+view (census_poverty)
+```
+
+```{r}
+#data cleaning 
+
+age <- census_poverty [ 1: 3, 1 : 5,  ] %>% 
+  rename( age = category )
+view (age)
+
+nativity <- census_poverty [ 4 : 7, 1 : 5] %>% 
+  rename (nativity = category)
+view (nativity)
+
+region <-  census_poverty [ 8 : 11, 1 :5 ] %>% 
+  rename (region = category )
+view (region )
+
+metropolitan <-  census_poverty [12 : 15, 1 : 5] %>% 
+  rename (metropolitan = category)
+view (metropolitan)
+
+employment <- census_poverty [17:21 , 1:5] %>% 
+  rename (employment = category )
+view (employment)
+
+disability <-  census_poverty [ 22: 23, 1: 5] %>% 
+  rename (disability = category)
+view (disability)
+
+educational_attainment <- census_poverty [25: 28, 1:5 ] %>% 
+  rename (educational_attainment = category) 
+view (educational_attainment)
+```
+
+```{r}
+#transforming categorical variables to numeric 
+
+age <- factor(c("under age 18", "aged 18 to 64", "aged 65 and older")) 
+age 
+age_num <- unclass(age)
+age_num
+
+view (nativity)
+nativity <-  factor(c("native-born", "foreign-born", "naturalized citizen", "not a citizen"))
+nativity_num <- unclass(nativity) 
+nativity_num
+
+view(region)
+region <-  factor(c("Northeast", "Midwest", "South", "West"))
+region_num <- unclass(region)
+nativity_num
+
+view (metropolitan)
+metropolitan <-  factor(c("urban", "rural"))
+metropolitan_num <- unclass(metropolitan)
+metropolitan_num
+
+view (employment)
+employment <-  factor(c("all workers, worked full time", "part-time"))
+employment_num <- unclass(employment)
+employment_num
+
+view (educational_attainment)
+educational_attainment <- factor(c("no highschool diploma", "only highschool", "some college", "bachelor's degree or higher")) 
+educational_attainment_num <- unclass(educational_attainment)
+educational_attainment_num
+
+ed_data <- census_poverty %>%
+  filter(category %in% c("No high school diploma", "High school, no college", "Some college", "Bachelor's degree or higher"))
