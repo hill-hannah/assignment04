@@ -217,3 +217,37 @@ educational_attainment_num
 
 ed_data <- census_poverty %>%
   filter(category %in% c("No high school diploma", "High school, no college", "Some college", "Bachelor's degree or higher"))
+  
+  
+  #graph 1
+#Educational Attainment Filtered from Ed category by age and income 
+
+ed_data <- census_poverty %>%
+  filter(category %in% c("High school, no college", "Some college", "Bachelor's degree or higher")) %>% 
+  filter(age == !2) %>%
+  ggplot(aes(x = ed_data, y= n, group = age, color = age)) + 
+  geom_line()+ 
+  labs(
+    title = "Level of Income by Generation based off of Educational Attainment", 
+    caption = "Census Bureau:Income and Poverty 2019", 
+    fill = "age" 
+  )
+  
+```
+
+```{r}
+
+#graph 2 
+#region, income, US citizen or not 
+
+
+region_data <- census_poverty %>%
+  filter(category %in% c("Northeast, Midwest, South, West")) %>% 
+  group_by (percent_poverty) %>% 
+    ggplot(aes(x = region, y = percent_poverty, color = nativity)) + 
+    geom_bar()+ 
+  labs(
+    title = "Poverty by region grouped by American citizenship", 
+    caption = "Census Bureau: Income and Povery 2019"
+  ) 
+
