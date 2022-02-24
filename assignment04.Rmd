@@ -1,5 +1,5 @@
 ---
-title: "real04"
+title: "Assignment 04"
 author: "Hannah Hill & Imani Sherill"
 date: "2/23/2022"
 output: html_document
@@ -33,21 +33,50 @@ view(census)
 ```{r, cleaning data}
 race <- census [2:6, 1:5] %>%
   rename(race = category)
-view(race)
 age <- census [9:11, 1:5] %>%
   rename(age = category)
 sex <- census [7:8, 1:5] %>%
   rename(sex = category)
-
-
+nativity <- census [12:15, 1:5] %>%
+  rename(nativity = category)
+region <- census [16:19, 1:5] %>%
+  rename(region = category)
+metro <- census [20:23, 1:5] %>%
+  rename(metro = category)
+work_status <- census [25:28, 1:5] %>%
+  rename(work_status = category)
+disability <- census [30:31, 1:5] %>%
+  rename(disability = category)
+educ <- census [33:36, 1:5] %>%
+  rename(educ = category)
 ```
 
+
+```{r}
+gini <- read_csv("gini.csv")
+gini <- gini [4:63, 1:14] %>%
+  rename(category = 1)
+gini <- gini [4:63, 1:14] %>%
+  na.omit() %>%
+  rename(year = category) %>%
+  rename(mean_lowest_quint = 2) %>%
+  rename(mean_second_quint = 3) %>%
+  rename(mean_middle_quint = 4) %>%
+  rename(mean_fourth_quint = 5) %>%
+  rename(mean_highest_quint = 6) %>%
+  rename(mean_top5 = 7) %>%
+  rename(gini_coefficient = 14)
+
+inequality <- read_csv("inequality.csv")
+#probably don't use inequality just use gini and census
+```
 
 ## Data Visualization 1
 # Race
 ```{r, visualization 1}
 race %>%
   select(race, total_pop, in_poverty, percent_poverty) %>%
+  # select(race, percent_poverty) %>%
   ggplot() +
   geom_col(mapping = aes(x = race, y = percent_poverty)) +
   labs(
@@ -59,3 +88,32 @@ race %>%
   )
 ```
 
+```{r, visualization 1}
+# race %>%
+#   select(race, total_pop, in_poverty, percent_poverty)
+ggplot(race, aes(race, as.numericpercent_poverty)) + geom_col()
+# Number of cars in each class:
+g + geom_bar()
+```
+## Data Visualization 2
+# Sex, Age, Educational Attainment
+```{r}
+
+```
+
+
+## Data Visualization 3 - New dataset
+# gini coefficient since 1967
+``` {r}
+gini %>%
+  ggplot(mapping = aes(x = year, y = gini_coefficient)) +
+  geom_area(fill = 1, alpha=0.4) +
+  geom_point() +
+  #scale_x_continuous(expand = expansion(mult = c(0.002, 0)),
+                    # limits = c(1967, 2020),
+                    # breaks = 1967:2020) +
+  labs(x = "Year",
+       y = "Gini Coefficients")
+#### currently ugly, but passable. need to fix the y axis to be more spread out and not do every single .001 value.
+#### compare to other graph that highlights boomer generation lack of poverty
+```
