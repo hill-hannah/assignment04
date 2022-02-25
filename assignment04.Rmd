@@ -215,39 +215,35 @@ educational_attainment <- factor(c("no highschool diploma", "only highschool", "
 educational_attainment_num <- unclass(educational_attainment)
 educational_attainment_num
 
-ed_data <- census_poverty %>%
-  filter(category %in% c("No high school diploma", "High school, no college", "Some college", "Bachelor's degree or higher"))
-  
-  
-  #graph 1
-#Educational Attainment Filtered from Ed category by age and income 
 
-ed_data <- census_poverty %>%
-  filter(category %in% c("High school, no college", "Some college", "Bachelor's degree or higher")) %>% 
-  filter(age == !2) %>%
-  ggplot(aes(x = ed_data, y= n, group = age, color = age)) + 
-  geom_line()+ 
+install.packages(ggrepel)
+library(ggrepel)
+
+educational_attainment %>%
+  select(category, total_pop, in_poverty, percent_poverty) %>%
+  mutate(percent_poverty = as.numeric(percent_poverty)) %>%
+  ggplot() +
+  geom_col(mapping = aes(x = category, y = percent_poverty, fill = category)) +
+  theme_minimal() +
+  scale_x_discrete(guide = guide_axis(n.dodge=2)) +
   labs(
-    title = "Level of Income by Generation based off of Educational Attainment", 
-    caption = "Census Bureau:Income and Poverty 2019", 
-    fill = "age" 
+    title = "Level of Income by  Educational Attainment",
+    subtitle = "Data Visualization 03",
+    caption = "U.S. Census Bureau 2019",
+    x = "Educational Attainment",
+    y = "Percentage_Poverty"
   )
+
+# This graph highlights the relationship between education and poverty in the United States in the year 2019. As educational attainment increases, the population's poverty percentage decreases. A highly discussed topic, education is now recognized as an important social and economic policy tool. Using education as a resource can help decrease poverty as shown in this graph. However, policymakers must be wary of stating that all educational attainment provides positive economic returns. Specifically, there is a stark difference in level of poverty between "no high school diploma" and "bachelor's degree". This graph does exemplify some diminishing marginal returns between "some college" and a "bachelor's degree or higher", but it emphasizes the importance of a bachelor's degree and its relevance to decreasing poverty within higher-education. 
+
+
+region %>% 
+ggplot(mapping=(aes(x="", y = percent_poverty, fill = category))) + 
+          geom_bar(stat = "identity", width =1) + 
+          coord_polar ("y", start = 0) + 
+  theme_void() + 
+  geom_text(aes(y = percent_poverty, label = category ) , color ="white", size = 4)
   
-```
+  #The United States is rampant with poverty and income inequality. This simple, but effective, pie chart shows percent poverty based off of regions in the United States in 2019. The West and the Midwest have the highest percentages of poverty in the United States. Historically, that remains true. Both the Midwest and the West are agriculturally heavy regions that rely on cash crops and agricultural subsidies from the government. Subsequently, both the Northeast and more recently the South are known as business conducive cities. Large metropolitan cities like NYC, Boston, Stamford, Philadelphia, Atlanta. etc. all provide more professional services and in turn more and diverse job prospects. 
 
-```{r}
-
-#graph 2 
-#region, income, US citizen or not 
-
-
-region_data <- census_poverty %>%
-  filter(category %in% c("Northeast, Midwest, South, West")) %>% 
-  group_by (percent_poverty) %>% 
-    ggplot(aes(x = region, y = percent_poverty, color = nativity)) + 
-    geom_bar()+ 
-  labs(
-    title = "Poverty by region grouped by American citizenship", 
-    caption = "Census Bureau: Income and Povery 2019"
-  ) 
 
