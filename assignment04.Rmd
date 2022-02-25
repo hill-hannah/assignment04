@@ -8,6 +8,7 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, warning=FALSE)
 ```
+[U.S. Census Bureau Income Inequality](https://www.census.gov/library/publications/2021/demo/p60-273.html)
 
 ```{r}
 library(tidyverse)
