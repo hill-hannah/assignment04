@@ -1,12 +1,12 @@
 ---
 title: "Assignment 04"
 author: "Hannah Hill & Imani Sherill"
-date: "2/23/2022"
+date: "2/24/2022"
 output: html_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE)
 ```
 
 ```{r}
@@ -67,8 +67,8 @@ inequality <- read_csv("inequality.csv")
 #probably don't use inequality just use gini and census
 ```
 
-## Data Visualization 1
-# Race
+# Data Visualization 1
+## Race
 ```{r, visualization 1}
 race %>%
   select(race, total_pop, in_poverty, percent_poverty) %>%
@@ -87,17 +87,10 @@ race %>%
 ```
 
 
-## Data Visualization 2
-# Sex, Age, Educational Attainment
-```{r}
+# Measuring Income Inequality in the United States, 1976-2020
+## Data Visualization 03
 
-```
-
-
-## Measuring Income Inequality in the United States, 1976-2020
-# Data Visualization 03
-
-The Gini coefficient is a measure of income inequality across different groups. A Gini coefficient closer to 0 represents equal income while a value closer to 1 represents a high degree of inequality. In the graph below, income inequality steadily increases from .38 to to .47 representing a shift in wider dispersion and greater inequality between 1967 and 2020 within the United States.
+The Gini coefficient is a measure of income inequality across different groups. A Gini coefficient closer to 0 represents equal income while a value closer to 1 represents a high degree of inequality. In the graph below, income inequality steadily increases from .38 to to .47, representing a shift in wider dispersion and greater inequality between 1967 and 2020 within the United States. 
 
 ``` {r}
 library(ggplot2)
@@ -105,36 +98,62 @@ gini %>%
   mutate(gini_coefficient = as.numeric(gini_coefficient)) %>%
   mutate(year = as.numeric(year)) %>%
   ggplot(mapping = aes(x = year, y = gini_coefficient)) +
-  geom_point(color = "blue") +
-  geom_smooth(method=lm, color = "red", se=FALSE) +
-  ylim(.2,.6) +
+  geom_point(color = "blue", size=3, shape=18) +
+  geom_smooth(method=lm, color = "red", size=.2, se=FALSE) +
+  ylim(.25,.55) +
   theme_minimal() +
-  labs(x = "Year",
-       y = "Gini Coefficients") +
+  labs(
+    title = "Income Inequality in the United States",
+    subtitle = "1967-2020",
+    caption = "U.S. Census Bureau",
+    x = "Year",
+    y = "Gini Coefficients") +
   theme_minimal()
 ```
 
-## The Rich Keep Getting Richer
-# Data Visualization 04
+# The Rich Keep Getting Richer
+## Data Visualization 04
 
-In this graph, the mean income for the top 5% of households in the United States is documented across the years 1967 to 2020. For the richest 5%, the mean household income is trending upwards from $180,000 in 1967 to $446,000 in 2020. While these data provide a small insight into how the wealthiest are doing financially the last 50 years, analysis is limited by the fact that the data used are averages and not medians. This graph, however, does illustrate the impact of the 2008 Great Recession had on even the top 5% of households where mean household income drops off sharply after 2007.
+In Figure 4, the mean income for the top 5% of households in the United States is documented across the years 1967 to 2020. While these data provide a small insight into how the wealthiest are doing financially the last 50 years, analysis is limited by the fact that the data used are averages and not medians. This graph, however, does illustrate the impact of the 2008 Great Recession had on even the top 5% of households where mean household income drops off sharply after 2007. Despite being impacted by the Great Recession, overall growth for the mean household income trends upwards with a **133.5% increase** between 1967 and 2020. In contrast, Figure 5 shows the bottom quintile mean household income over the same time period. Here, the impact of the 2008 Great Recession is much more noticeable for low income households where income remains stagnant for several years. For these households, mean household income has only **increased by 34.2%** between 1967 and 2020.
 ```{r}
 giniplot %>%
-  mutate(.data = giniplot, year = as.numeric(year)) %>%
-  #mutate(mean_top5 = as.numeric(mean_top5)) #%>%
+  mutate(year = as.numeric(year)) %>%
+  mutate(mean_top5 = str_replace_all(mean_top5, ",", "")) %>%
+  mutate(mean_top5 = as.numeric(mean_top5)) %>%
   ggplot(aes(x = year, y = mean_top5)) +
-  geom_area(fill = "#69b3a2", alpha =0.4) +
-  geom_line(color = "69b3a2", size = 2) +
-  geom_point(size = 6, color = "#69b3a2") +
+  geom_area(fill = "steelblue", alpha =0.4) +
+  geom_line(color = "steelblue", size = 2) +
+  geom_point(size = 1.5, color = "blue") +
   geom_jitter() +
   scale_x_continuous(breaks = c(1975,1990,2005,2020)) +
-  #scale_y_continuous(breaks = c(185000,250000, 315000, 380000,445000,510000)) +
+  scale_y_continuous(breaks = c(0,55000,120000,185000,250000, 315000, 380000,445000)) +
   theme_minimal() +
   labs(
-    title = "The Rich Keep Getting Richer:",
-    subtitle = "The Top 5% of Household's Mean Income",
+    title = "Figure 4 - The Rich Keep Getting Richer:",
+    subtitle = "The Top 5% of Household's Mean Income in the U.S., 1967-2020",
+    caption = "U.S. Census Bureau",
     x = "Year",
     y = "Mean Annual Income"
   )
 ```
 
+```{r}
+giniplot %>%
+  mutate(year = as.numeric(year)) %>%
+  mutate(mean_lowest_quint = str_replace_all(mean_lowest_quint, ",", "")) %>%
+  mutate(mean_lowest_quint = as.numeric(mean_lowest_quint)) %>%
+  ggplot(aes(x = year, y = mean_lowest_quint)) +
+  geom_area(fill = "maroon", alpha =0.4) +
+  geom_line(color = "maroon", size = 2) +
+  geom_point(size = 1.5, color = "red") +
+  geom_jitter() +
+  scale_x_continuous(breaks = c(1975,1990,2005,2020)) +
+  theme_minimal() +
+  labs(
+    title = "Figure 5 - Stagnant Growth for the Lowest Earning Households:",
+    subtitle = "The Bottom Quintile of Household's Mean Income in the U.S., 1967-2020",
+    caption = "U.S. Census Bureau",
+    x = "Year",
+    y = "Mean Annual Income"
+  )
+```
