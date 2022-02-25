@@ -147,6 +147,23 @@ library(srvyr)
 library (dplyr)
 ```
 
+
+```{r}
+##census <- read_excel(path = "relative/file/path/to/data")
+
+```
+
+```{r}
+census_poverty <-  census_poverty [ 9 : 63, 1 : 5] %>% 
+  na.omit() %>% 
+  rename (category = 1 ) %>%
+  rename( total_pop = 2) %>%
+  rename (in_poverty = 3 ) %>% 
+  rename (moe = 4 ) %>% 
+  rename (percent_poverty = 5)
+view (census_poverty)
+```
+
 ```{r}
 ##census <- read_excel(path = "relative/file/path/to/data")
 census_poverty <- read_excel("poverty.xlsx") %>%
