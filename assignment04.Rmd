@@ -9,11 +9,6 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
-
 ```{r}
 library(tidyverse)
 library(srvyr)
@@ -66,6 +61,7 @@ gini <- gini [4:63, 1:14] %>%
   rename(mean_highest_quint = 6) %>%
   rename(mean_top5 = 7) %>%
   rename(gini_coefficient = 14)
+giniplot <- gini [1:56, 1:7]
 
 inequality <- read_csv("inequality.csv")
 #probably don't use inequality just use gini and census
@@ -76,11 +72,13 @@ inequality <- read_csv("inequality.csv")
 ```{r, visualization 1}
 race %>%
   select(race, total_pop, in_poverty, percent_poverty) %>%
+  mutate(percent_poverty = as.numeric(percent_poverty)) %>%
   # select(race, percent_poverty) %>%
   ggplot() +
-  geom_col(mapping = aes(x = race, y = percent_poverty)) +
+  geom_col(mapping = aes(x = race, y = percent_poverty, fill = race)) +
+  theme_minimal() +
   labs(
-    title = "Americans in Poverty in 2019 by Race",
+    title = "Americans Experiencing Poverty in 2019 by Race",
     subtitle = "Data Visualization 01",
     caption = "Source: U.S. Census Bureau",
     x = "Race",
@@ -88,13 +86,7 @@ race %>%
   )
 ```
 
-```{r, visualization 1}
-# race %>%
-#   select(race, total_pop, in_poverty, percent_poverty)
-ggplot(race, aes(race, as.numericpercent_poverty)) + geom_col()
-# Number of cars in each class:
-g + geom_bar()
-```
+
 ## Data Visualization 2
 # Sex, Age, Educational Attainment
 ```{r}
@@ -102,118 +94,47 @@ g + geom_bar()
 ```
 
 
-## Data Visualization 3 - New dataset
-# gini coefficient since 1967
+## Measuring Income Inequality in the United States, 1976-2020
+# Data Visualization 03
+
+The Gini coefficient is a measure of income inequality across different groups. A Gini coefficient closer to 0 represents equal income while a value closer to 1 represents a high degree of inequality. In the graph below, income inequality steadily increases from .38 to to .47 representing a shift in wider dispersion and greater inequality between 1967 and 2020 within the United States.
 
 ``` {r}
+library(ggplot2)
 gini %>%
+  mutate(gini_coefficient = as.numeric(gini_coefficient)) %>%
+  mutate(year = as.numeric(year)) %>%
   ggplot(mapping = aes(x = year, y = gini_coefficient)) +
-  geom_area(fill = 1, alpha=0.4) +
-  geom_point() +
-  #scale_x_continuous(expand = expansion(mult = c(0.002, 0)),
-                    # limits = c(1967, 2020),
-                    # breaks = 1967:2020) +
+  geom_point(color = "blue") +
+  geom_smooth(method=lm, color = "red", se=FALSE) +
+  ylim(.2,.6) +
+  theme_minimal() +
   labs(x = "Year",
-       y = "Gini Coefficients")
-#### currently ugly, but passable. need to fix the y axis to be more spread out and not do every single .001 value.
-#### compare to other graph that highlights boomer generation lack of poverty
+       y = "Gini Coefficients") +
+  theme_minimal()
 ```
 
-### Imani's edits 
-### data editing and cleaning 
+## The Rich Keep Getting Richer
+# Data Visualization 04
 
+In this graph, the mean income for the top 5% of households in the United States is documented across the years 1967 to 2020. For the richest 5%, the mean household income is trending upwards from $180,000 in 1967 to $446,000 in 2020. While these data provide a small insight into how the wealthiest are doing financially the last 50 years, analysis is limited by the fact that the data used are averages and not medians. This graph, however, does illustrate the impact of the 2008 Great Recession had on even the top 5% of households where mean household income drops off sharply after 2007.
 ```{r}
-library(tidyverse)
-library (haven)
-library(janitor)
-library(srvyr)
-library (dplyr)
+giniplot %>%
+  mutate(.data = giniplot, year = as.numeric(year)) %>%
+  #mutate(mean_top5 = as.numeric(mean_top5)) #%>%
+  ggplot(aes(x = year, y = mean_top5)) +
+  geom_area(fill = "#69b3a2", alpha =0.4) +
+  geom_line(color = "69b3a2", size = 2) +
+  geom_point(size = 6, color = "#69b3a2") +
+  geom_jitter() +
+  scale_x_continuous(breaks = c(1975,1990,2005,2020)) +
+  #scale_y_continuous(breaks = c(185000,250000, 315000, 380000,445000,510000)) +
+  theme_minimal() +
+  labs(
+    title = "The Rich Keep Getting Richer:",
+    subtitle = "The Top 5% of Household's Mean Income",
+    x = "Year",
+    y = "Mean Annual Income"
+  )
 ```
 
-```{r}
-##census <- read_excel(path = "relative/file/path/to/data")
-
-census_poverty <- read_excel("poverty.xlsx") %>%
-janitor::clean_names()
-glimpse (census_poverty) 
-```
-
-
-```{r}
-census_poverty <-  census_poverty [ 9 : 63, 1 : 5] %>% 
-  na.omit() %>% 
-  rename (category = 1 ) %>%
-  rename( total_pop = 2) %>%
-  rename (in_poverty = 3 ) %>% 
-  rename (moe = 4 ) %>% 
-  rename (percent_poverty = 5)
-view (census_poverty)
-```
-
-```{r}
-#data cleaning 
-
-age <- census_poverty [ 1: 3, 1 : 5,  ] %>% 
-  rename( age = category )
-view (age)
-
-nativity <- census_poverty [ 4 : 7, 1 : 5] %>% 
-  rename (nativity = category)
-view (nativity)
-
-region <-  census_poverty [ 8 : 11, 1 :5 ] %>% 
-  rename (region = category )
-view (region )
-
-metropolitan <-  census_poverty [12 : 15, 1 : 5] %>% 
-  rename (metropolitan = category)
-view (metropolitan)
-
-employment <- census_poverty [17:21 , 1:5] %>% 
-  rename (employment = category )
-view (employment)
-
-disability <-  census_poverty [ 22: 23, 1: 5] %>% 
-  rename (disability = category)
-view (disability)
-
-educational_attainment <- census_poverty [25: 28, 1:5 ] %>% 
-  rename (educational_attainment = category) 
-view (educational_attainment)
-```
-
-```{r}
-#transforming categorical variables to numeric 
-
-age <- factor(c("under age 18", "aged 18 to 64", "aged 65 and older")) 
-age 
-age_num <- unclass(age)
-age_num
-
-view (nativity)
-nativity <-  factor(c("native-born", "foreign-born", "naturalized citizen", "not a citizen"))
-nativity_num <- unclass(nativity) 
-nativity_num
-
-view(region)
-region <-  factor(c("Northeast", "Midwest", "South", "West"))
-region_num <- unclass(region)
-nativity_num
-
-view (metropolitan)
-metropolitan <-  factor(c("urban", "rural"))
-metropolitan_num <- unclass(metropolitan)
-metropolitan_num
-
-view (employment)
-employment <-  factor(c("all workers, worked full time", "part-time"))
-employment_num <- unclass(employment)
-employment_num
-
-view (educational_attainment)
-educational_attainment <- factor(c("no highschool diploma", "only highschool", "some college", "bachelor's degree or higher")) 
-educational_attainment_num <- unclass(educational_attainment)
-educational_attainment_num
-
-ed_data <- census_poverty %>%
-  filter(category %in% c("No high school diploma", "High school, no college", "Some college", "Bachelor's degree or higher"))
